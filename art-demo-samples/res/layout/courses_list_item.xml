@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+    <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:gravity="center_vertical"
+                    android:id="@+id/rl_course"
+            >
+        <ImageView android:layout_width="81dp" android:layout_height="74dp"
+                android:layout_alignParentLeft="true"
+                android:id="@+id/iv_cover"
+                android:layout_centerVertical="true"
+                />
+        <RelativeLayout
+                android:id="@+id/desc_section"
+                android:layout_width="wrap_content"
+                android:layout_height="74dp"
+                android:layout_toRightOf="@id/iv_cover"
+                android:layout_alignParentRight="true"
+                >
+            <TextView
+                    android:id="@+id/course_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16dp"
+                    android:layout_alignParentTop="true"
+                    android:gravity="left|top"
+                    android:singleLine="true"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_disabled"
+                    />
+            <TextView
+                    android:id="@+id/course_state"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:gravity="left|bottom"
+                    android:singleLine="true"
+                    android:textColor="@color/text_disabled"
+                    android:textSize="12dp"
+                    android:text="@string/learn_after_finish_by"
+                    />
+
+            <!--todo star-->
+
+            <!--todo process bar-->
+        </RelativeLayout>
+    </RelativeLayout>
+</LinearLayout>

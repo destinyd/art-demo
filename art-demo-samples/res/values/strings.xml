@@ -4,5 +4,6 @@
 	<string name="app_name">art-demo-samples</string>
 	<string name="action_settings">Settings</string>
 	<string name="hello_world">Hello world!</string>
+    <string name="learn_after_finish_by">完成第%s章后可解锁本章节</string>
 
 </resources>

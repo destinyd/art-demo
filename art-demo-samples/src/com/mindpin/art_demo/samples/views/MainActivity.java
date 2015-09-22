@@ -1,4 +1,4 @@
-package com.mindpin.art_demo.samples;
+package com.mindpin.art_demo.samples.views;
 
 import android.app.Activity;
 import android.app.ListActivity;

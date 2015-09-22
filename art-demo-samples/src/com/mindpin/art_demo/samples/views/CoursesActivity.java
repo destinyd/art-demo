@@ -1,4 +1,4 @@
-package com.mindpin.art_demo.samples;
+package com.mindpin.art_demo.samples.views;
 
 import android.app.Activity;
 import android.app.ListActivity;
@@ -9,7 +9,11 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import com.mindpin.android.loadingview.LoadingView;
+import com.mindpin.art_demo.samples.R;
+import com.mindpin.art_demo.samples.models.demo.Course;
+import com.mindpin.art_demo.samples.models.interfaces.ICourse;
 import com.mindpin.art_demo.samples.utils.DemoAsyncTask;
+import com.mindpin.art_demo.samples.views.adapter.CoursesAdapter;
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
 
@@ -23,6 +27,7 @@ public class CoursesActivity extends RoboActivity {
     ListView lv_courses;
     @InjectView(R.id.loading_view)
     LoadingView loading_view;
+    private List<ICourse> courses = new ArrayList<ICourse>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,14 +56,35 @@ public class CoursesActivity extends RoboActivity {
             public Void call() throws Exception {
 //                order = DataProvider.deliveryman_order(order_id);
                 Thread.sleep(2000);
+                Course course = new Course();
+                course.title = "1. 用几何体画身边小物品";
+                course.cover = "http://www.mindpin.com/mockups/kc/art-camp_20150920/images/%E8%AF%BE%E7%A8%8B%E5%88%97%E8%A1%A8/u37.png";
+                course.state = "状态1";
+                courses.add(course);
+
+                course = new Course();
+                course.title = "2. 素描简单的小物品";
+                course.cover = "http://www.mindpin.com/mockups/kc/art-camp_20150920/images/%E8%AF%BE%E7%A8%8B%E5%88%97%E8%A1%A8/u83.png";
+                course.state = "状态2";
+                courses.add(course);
+
+                course = new Course();
+                course.title = "3. 充满活力的动物和植物";
+                course.cover = "http://www.mindpin.com/mockups/kc/art-camp_20150920/images/%E8%AF%BE%E7%A8%8B%E5%88%97%E8%A1%A8/u85.png";
+                course.state = "状态3";
+                courses.add(course);
+
+                course = new Course();
+                course.title = "4. 可以装进画框的素描";
+                course.cover = "http://www.mindpin.com/mockups/kc/art-camp_20150920/images/%E8%AF%BE%E7%A8%8B%E5%88%97%E8%A1%A8/u87.png";
+                course.state = "状态4";
+                courses.add(course);
                 return null;
             }
 
             @Override
             protected void onSuccess(Void aVoid) throws Exception {
-//                build_views();
-//                if (need_show_scan)
-//                    show_scan();
+                build_views();
             }
 
             @Override
@@ -67,6 +93,12 @@ public class CoursesActivity extends RoboActivity {
                 loading_view.hide();
             }
         }.execute();
+    }
+
+    private void build_views() {
+        final CoursesAdapter adapter =
+                new CoursesAdapter(this, courses);
+        lv_courses.setAdapter(adapter);
     }
 
 //    @SuppressWarnings("unchecked")
