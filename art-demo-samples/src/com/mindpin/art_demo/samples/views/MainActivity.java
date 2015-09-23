@@ -39,6 +39,7 @@ public class MainActivity extends ListActivity {
         List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
         addItem(data, "教程列表", CoursesActivity.class);
         addItem(data, "章节列表", ChaptersActivity.class);
+        addItem(data, "章节", ChapterActivity.class);
 //        addItem(data, "other", OtherActivity.class);
 
         return data;

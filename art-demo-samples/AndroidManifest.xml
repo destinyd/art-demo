@@ -30,6 +30,7 @@
 		<activity android:name=".views.SimpleActivity"/>
 		<activity android:name=".views.CoursesActivity"/>
         <activity android:name=".views.ChaptersActivity"/>
+        <activity android:name=".views.ChapterActivity"/>
 
 	</application>
 

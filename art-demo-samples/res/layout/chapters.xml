@@ -8,6 +8,7 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             style="@style/ChaptersChatperRl"
+            android:id="@+id/rl_chapter_could_learn"
             >
         <LinearLayout
                 android:id="@+id/rl_chapter1_index"
