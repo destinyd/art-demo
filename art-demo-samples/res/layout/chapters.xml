@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+    <RelativeLayout
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            style="@style/ChaptersChatperRl"
+            >
+        <LinearLayout
+                android:id="@+id/rl_chapter1_index"
+                style="@style/ChaptersChapterLLIndexLearned">
+            <TextView
+                    android:id="@+id/tv_chapter1_index"
+                    android:text="1"
+                    style="@style/ChaptersChapterTVIndexLearned"
+                    />
+        </LinearLayout>
+
+        <TextView
+                android:id="@+id/tv_chapter1_title"
+                style="@style/ChaptersChapterTVBelowIndexLearned"
+                android:text="关于圆球体的练习"
+                android:layout_below="@id/rl_chapter1_index"
+                />
+
+        <TextView
+                android:layout_below="@id/tv_chapter1_title"
+                android:text="1 / 2"
+                style="@style/ChaptersChapterTVBelowIndexLearned"
+                />
+    </RelativeLayout>
+
+    <RelativeLayout
+            style="@style/ChaptersChatperRl"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            >
+        <LinearLayout
+                style="@style/ChaptersChapterLLIndex"
+                android:id="@+id/rl_chapter2_index"
+                android:background="@drawable/round_no_learn"
+                >
+            <TextView
+                    android:id="@+id/tv_chapter2_index"
+                    android:text="2"
+                    style="@style/ChaptersChapterTVIndex"
+                    />
+        </LinearLayout>
+
+        <TextView
+                style="@style/ChaptersChapterTVBelowIndex"
+                android:id="@+id/tv_chapter2_title"
+                android:text="关于圆柱体的练习"
+                android:layout_below="@+id/rl_chapter2_index"/>
+
+        <TextView
+                style="@style/ChaptersChapterTVBelowIndex"
+                android:layout_below="@id/tv_chapter2_title"
+                android:text="0 / 2"
+                />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+            style="@style/ChaptersChatperRl"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            >
+        <LinearLayout
+                style="@style/ChaptersChapterLLIndex"
+                android:id="@+id/rl_chapter3_index"
+                >
+            <TextView
+                    android:id="@+id/tv_chapter3_index"
+                    android:text="3"
+                    style="@style/ChaptersChapterTVIndex"
+                    />
+        </LinearLayout>
+
+        <TextView
+                style="@style/ChaptersChapterTVBelowIndex"
+                android:id="@+id/tv_chapter3_title"
+                android:text="关于长方体的练习"
+                android:layout_below="@+id/rl_chapter3_index"/>
+
+        <TextView
+                style="@style/ChaptersChapterTVBelowIndex"
+                android:layout_below="@id/tv_chapter3_title"
+                android:text="0 / 2"
+                />
+    </RelativeLayout>
+
+    <RelativeLayout
+            style="@style/ChaptersChatperRl"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            >
+        <LinearLayout
+                style="@style/ChaptersChapterLLIndex"
+                android:id="@+id/rl_chapter4_index"
+                >
+            <TextView
+                    android:id="@+id/tv_chapter4_index"
+                    android:text="4"
+                    style="@style/ChaptersChapterTVIndex"
+                    />
+        </LinearLayout>
+
+        <TextView
+                style="@style/ChaptersChapterTVBelowIndex"
+                android:id="@+id/tv_chapter4_title"
+                android:text="关于组合形体的练习"
+                android:layout_below="@+id/rl_chapter4_index"/>
+
+        <TextView
+                style="@style/ChaptersChapterTVBelowIndex"
+                android:layout_below="@id/tv_chapter4_title"
+                android:text="0 / 2"
+                />
+    </RelativeLayout>
+
+    <com.mindpin.android.loadingview.LoadingView
+            android:id="@+id/loading_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:background="@android:color/background_light"
+            />
+</RelativeLayout>

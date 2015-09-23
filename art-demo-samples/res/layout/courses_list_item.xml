@@ -21,6 +21,7 @@
                 android:layout_height="74dp"
                 android:layout_toRightOf="@id/iv_cover"
                 android:layout_alignParentRight="true"
+                android:paddingLeft="5dp"
                 >
             <TextView
                     android:id="@+id/course_name"

@@ -16,5 +16,43 @@
 	<style name="AppTheme" parent="AppBaseTheme">
 		<!-- All customizations that are NOT specific to a particular API-level can go here. -->
 	</style>
+    <style name="ChaptersChatperRl">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">10dp</item>
+    </style>
+    <style name="ChaptersChapterLLIndex">
+        <item name="android:layout_width">50dp</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:background">@drawable/round_no_learn</item>
+    </style>
+    <style name="ChaptersChapterTV">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">16dp</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <style name="ChaptersChapterTVIndex" parent="ChaptersChapterTV">
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+    <style name="ChaptersChapterLLIndexLearned" parent="ChaptersChapterLLIndex">
+        <item name="android:background">@drawable/round_learned</item>
+    </style>
+    <style name="ChaptersChapterTVIndexLearned" parent="ChaptersChapterTVIndex">
+        <item name="android:textColor">#333333</item>
+    </style>
+    <style name="ChaptersChapterTVBelowIndex" parent="ChaptersChapterTV">
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:textColor">#999999</item>
+    </style>
+    <style name="ChaptersChapterTVBelowIndexLearned" parent="ChaptersChapterTVBelowIndex">
+        <item name="android:textColor">#333333</item>
+    </style>
 
 </resources>

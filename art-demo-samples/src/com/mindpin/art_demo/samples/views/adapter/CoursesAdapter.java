@@ -1,11 +1,16 @@
 package com.mindpin.art_demo.samples.views.adapter;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import com.github.kevinsawicki.wishlist.SingleTypeAdapter;
+import com.mindpin.art_demo.samples.Constants;
 import com.mindpin.art_demo.samples.R;
 import com.mindpin.art_demo.samples.models.interfaces.ICourse;
+import com.mindpin.art_demo.samples.views.ChaptersActivity;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.List;
@@ -29,7 +34,7 @@ public class CoursesAdapter extends SingleTypeAdapter<ICourse> implements View.O
     @Override
     protected int[] getChildViewIds() {
         return new int[]{
-                R.id.iv_cover, R.id.course_name, R.id.course_state //, R.id.order_desc, R.id.btn_action, R.id.rl_order
+                R.id.iv_cover, R.id.course_name, R.id.course_state, R.id.rl_course
         };
     }
 
@@ -56,40 +61,37 @@ public class CoursesAdapter extends SingleTypeAdapter<ICourse> implements View.O
 
     @Override
     public void onClick(View v) {
-        Integer position = (Integer) v.getTag();
-        ICourse order = getItem(position);
+//        Integer position = (Integer) v.getTag();
+//        ICourse order = getItem(position);
+        Log.d("onclick", v.toString());
         switch (v.getId()) {
 //            case R.id.btn_action:
 //                action_for_order_status(order);
 //                break;
             case R.id.rl_course:
-                go_to_course(order);
+//                go_to_course(order);
+                go_to_course();
                 break;
         }
     }
 
-    private void go_to_course(ICourse order) {
+    private void go_to_course(){ //{ICourse order) {
         Log.d("CoursesAdapter", "go to course");
-//        Intent intent = new Intent(activity, OrderActivity.class);
-//        intent.putExtra(Constants.Extra.COURSE_ID, order.get_id());
-//        activity.startActivityForResult(intent, Constants.Request.COURSE);
+        Intent intent = new Intent(activity, ChaptersActivity.class);
+        activity.startActivityForResult(intent, Constants.Request.COURSE);
     }
 
 //
-//    @Override
-//    public View getView(int position, View convertView, ViewGroup parent) {
-//        View view = super.getView(position, convertView, parent);
-//        bind_views(position);
-//        return view;
-//    }
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View view = super.getView(position, convertView, parent);
+        bind_views(position);
+        return view;
+    }
 
-//    private void bind_views(int position) {
-//        Button button = getView(3, Button.class);
-//        button.setTag(position);
-//        button.setOnClickListener(this);
-//
-//        RelativeLayout relativeLayout = getView(4, RelativeLayout.class);
-//        relativeLayout.setTag(position);
-//        relativeLayout.setOnClickListener(this);
-//    }
+    private void bind_views(int position) {
+        RelativeLayout relativeLayout = getView(3, RelativeLayout.class);
+        relativeLayout.setTag(position);
+        relativeLayout.setOnClickListener(this);
+    }
 }
