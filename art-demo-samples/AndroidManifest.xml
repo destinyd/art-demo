@@ -31,7 +31,7 @@
 		<activity android:name=".views.CoursesActivity"/>
         <activity android:name=".views.ChaptersActivity"/>
         <activity android:name=".views.ChapterActivity"/>
-
+        <activity android:name=".views.StepActivity"/>
 	</application>
 
 </manifest>

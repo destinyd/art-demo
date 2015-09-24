@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+    <ScrollView
+            style="@style/ChaptersChatperRl"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="0dp"
+            android:paddingBottom="50dp"
+            >
+        <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
+                      android:layout_alignParentTop="true"
+                      android:orientation="vertical"
+                >
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                          android:gravity="center"
+                          android:id="@+id/ll_step_warning"
+                          android:background="#FFFECE"
+                          android:padding="10dp"
+                    >
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                          android:textSize="18dp"
+                          android:layout_alignParentTop="true"
+                          android:gravity="center"
+                          android:id="@+id/tv_step_warning"
+                          android:text="@string/draw_pencil_warning"
+                        />
+            </LinearLayout>
+
+            <ImageView android:layout_width="match_parent" android:layout_height="wrap_content"
+                       android:minHeight="300dp"
+                       android:layout_centerHorizontal="true"
+                       android:scaleType="fitCenter"
+                       android:layout_margin="10dp"
+                       android:id="@+id/iv_step_1"
+                    />
+        </LinearLayout>
+    </ScrollView>
+
+    <Button android:layout_width="match_parent" android:layout_height="50dp"
+            android:id="@+id/btn_next"
+            android:text="画完了！点击拍照提交"
+            android:layout_alignParentBottom="true"
+            />
+
+    <com.mindpin.android.loadingview.LoadingView
+            android:id="@+id/loading_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:background="@android:color/background_light"
+            />
+</RelativeLayout>

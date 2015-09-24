@@ -5,5 +5,6 @@
 	<string name="action_settings">Settings</string>
 	<string name="hello_world">Hello world!</string>
     <string name="learn_after_finish_by">完成第%s章后可解锁本章节</string>
+    <string name="draw_pencil_warning">请使用A4画纸和HB铅笔进行绘画</string>
 
 </resources>
