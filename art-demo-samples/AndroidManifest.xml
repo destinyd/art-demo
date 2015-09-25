@@ -32,6 +32,7 @@
         <activity android:name=".views.ChaptersActivity"/>
         <activity android:name=".views.ChapterActivity"/>
         <activity android:name=".views.StepActivity"/>
+        <activity android:name=".views.ResultActivity"/>
 	</application>
 
 </manifest>

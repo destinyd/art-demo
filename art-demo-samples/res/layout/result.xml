@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+    <ScrollView
+            style="@style/ChaptersChatperRl"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="0dp"
+            android:paddingBottom="50dp"
+            >
+        <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
+                      android:layout_alignParentTop="true"
+                      android:orientation="vertical"
+                      android:padding="10dp"
+                >
+            <Button android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:text="对比教材"
+                    android:id="@+id/btn_compare"
+                    />
+
+            <ImageView android:layout_width="match_parent" android:layout_height="wrap_content"
+                       android:minHeight="300dp"
+                       android:layout_centerHorizontal="true"
+                       android:scaleType="fitCenter"
+                       android:layout_margin="10dp"
+                       android:id="@+id/iv_result"
+                    />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                      android:textSize="14dp"
+                      android:gravity="center"
+                      android:id="@+id/tv_score_label"
+                      android:text="您本次的绘画和教材图相似度为"
+                    />
+
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                      android:textSize="21dp"
+                      android:gravity="center"
+                      android:id="@+id/tv_score"
+                      android:text="80%以上"
+                    />
+
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                      android:textSize="14dp"
+                      android:id="@+id/tv_assess"
+                      android:text="画面完整，整体和谐，物体刻画细致，体感和质感比较好，有一定的造光基础"
+                    />
+
+        </LinearLayout>
+    </ScrollView>
+
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                  android:layout_alignParentBottom="true"
+                  android:orientation="horizontal"
+                  android:weightSum="2"
+            >
+        <Button android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:id="@+id/btn_retry"
+                android:text="再画一次"
+                />
+        <Button android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:id="@+id/btn_next"
+                android:text="学习下一章"
+                />
+    </LinearLayout>
+
+    <com.mindpin.android.loadingview.LoadingView
+            android:id="@+id/loading_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:background="@android:color/background_light"
+            android:visibility="gone"
+            />
+</RelativeLayout>
