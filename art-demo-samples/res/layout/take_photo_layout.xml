@@ -3,11 +3,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp"
+                  android:padding="5dp"
+                  android:background="#FFFECE"
+                  android:layout_alignParentTop="true"
+                  android:id="@+id/ll_warning"
+                  android:layout_weight="1"
+            >
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                  android:text="请把画纸上的杂物移开，把橡皮碎屑擦拭干净"
+                  android:layout_gravity="center"
+                  android:gravity="center"
+                />
+    </LinearLayout>
+
   <FrameLayout
     android:id="@+id/camera_preview"
     android:layout_width="fill_parent"
     android:layout_height="0dp"
-    android:layout_weight="9"
+    android:layout_weight="8"
     />
 
 	<Button 
