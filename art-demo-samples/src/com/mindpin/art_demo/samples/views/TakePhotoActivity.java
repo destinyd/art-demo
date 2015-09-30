@@ -1,260 +1,468 @@
 package com.mindpin.art_demo.samples.views;
 
+import android.app.Activity;
 import android.content.Context;
-import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
+import android.content.Intent;
+import android.graphics.*;
+import android.graphics.Bitmap.CompressFormat;
 import android.hardware.Camera;
+import android.hardware.Camera.*;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.view.View;
-import android.view.Window;
+import android.view.*;
+import android.view.View.OnTouchListener;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
+import android.widget.FrameLayout;
+import android.widget.Toast;
 import com.mindpin.art_demo.samples.R;
-import roboguice.activity.RoboActivity;
-import roboguice.inject.InjectView;
 
 import java.io.*;
-import java.util.Iterator;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-public class TakePhotoActivity extends RoboActivity implements SurfaceHolder.Callback, Camera.PictureCallback {
+@SuppressWarnings("deprecation")
+public class TakePhotoActivity extends Activity {// implements OnTouchListener {
     private static final String TAG = "TakePhotoActivity";
-    @InjectView(R.id.sv_preview)
-    SurfaceView sv_preview;
-    @InjectView(R.id.btn_capture)
-    Button btn_capture;
-
-    private Camera camera; //这个是hardare的Camera对象
-    private boolean isPreview;
-    private Bitmap mBitmap;
-    private int max_width;
-    private int max_height;
-
+    private Button take_photo_button;
+    private SurfaceHolder mHolder;
+    private String path;
+    private static Camera mCamera;
+    public File photoFile;
+    public Handler mHandler = new Handler();
+    private CameraPreview mPreview;
+    private FrameLayout preview;
+    int displayRotation;
+    int picRotate = 0;
+    private DrawCaptureRect mDraw;
+    private int width = 0;
+    private int height = 0;
+    private boolean isfocusing = false;
+    private boolean isfocuseed = false;
+    private int x = 0;
+    private int y = 0;
+    private int draw_width, draw_height;
+    private int fix_top;
+    private int mid_x, mid_y;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
-    /* 使应用程序全屏运行，不使用title bar */
-//        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.take_photo_layout);
 
-        setContentView(R.layout.take_phone);
+        //旋转监视器
+        new OrientationListener(TakePhotoActivity.this).enable();
 
-        sv_preview.setFocusable(true);
-        sv_preview.setFocusableInTouchMode(true);
-        sv_preview.setClickable(true);
-        btn_capture.setOnClickListener(new View.OnClickListener() {
+        // CameraPreview 重写 SurfaceView
+        mPreview = new CameraPreview(this, mCamera);
+        preview = (FrameLayout) findViewById(R.id.camera_preview);
+//        preview.setOnTouchListener(this);
+        // 将SurfaceView 添加到 FrameLayout 下
+        preview.addView(mPreview);
 
+        init();
+
+        // DrawCaptureRect 重写 View
+        mDraw = new DrawCaptureRect(TakePhotoActivity.this,
+                width / 2 - draw_width / 2, height / 2 - draw_height / 2 + fix_top, draw_width, draw_height,
+                getResources().getColor(R.color.red));
+        preview.addView(mDraw);
+
+        take_photo_button = (Button) findViewById(R.id.take_photo_button);
+        take_photo_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                camera.takePicture(null, null, null, TakePhotoActivity.this);
-
+                // 已经成功对焦
+//                if (isfocuseed) {
+                mCamera.takePicture(shutterCallback, null, mPicture);
+                isfocusing = false;
+                isfocuseed = false;
+//                } else if (isfocusing) {
+//                    Toast.makeText(TakePhotoActivity.this, "正在聚焦，请稍等", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    Toast.makeText(TakePhotoActivity.this, "请触摸屏幕对焦后再拍照", Toast.LENGTH_SHORT).show();
+//                }
             }
         });
-        //SurfaceView中的getHolder方法可以获取到一个SurfaceHolder实例
-        SurfaceHolder holder = sv_preview.getHolder();
-        //为了实现照片预览功能，需要将SurfaceHolder的类型设置为PUSH
-        //这样，画图缓存就由Camera类来管理，画图缓存是独立于Surface的
-        holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-        holder.addCallback(this);
     }
 
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        // 当Surface被创建的时候，该方法被调用，可以在这里实例化Camera对象
-        //同时可以对Camera进行定制
-        camera = Camera.open(); //获取Camera实例
+    private void focus() {
+        // 自动聚焦
+        isfocusing = true;
+        Rect focusRect = calculateTapArea(mid_x, mid_y, 1f);
+        Rect meteringRect = calculateTapArea(mid_x, mid_y, 1.5f);
+        Parameters parameters = mCamera.getParameters();
+        List<String> focusModes = parameters.getSupportedFocusModes();
+        System.out.println("支持的变焦模式" + focusModes);
+        parameters.setFocusMode(Parameters.FOCUS_MODE_AUTO);
+        if (parameters.getMaxNumFocusAreas() > 0) {
+            List<Area> focusAreas = new ArrayList<Area>();
+            focusAreas.add(new Area(focusRect, 600));
+            parameters.setFocusAreas(focusAreas);
+        }
+        if (parameters.getMaxNumMeteringAreas() > 0) {
+            List<Area> meteringAreas = new ArrayList<Area>();
+            meteringAreas.add(new Area(meteringRect, 1000));
+            parameters.setMeteringAreas(meteringAreas);
+        }
+        mCamera.cancelAutoFocus();
+        mCamera.setParameters(parameters);
+        mCamera.autoFocus(new AutoFocusCallback() {
+            @Override
+            public void onAutoFocus(boolean success, Camera camera) {
+                Log.d(TAG, "onAutoFocus success:" + success);
+                // 对焦成功
+                if (success) {
+                    mDraw = new DrawCaptureRect(TakePhotoActivity.this, mid_x, mid_y, draw_width, draw_height, getResources().getColor(R.color.green));
+                    preview.addView(mDraw);
+                    isfocuseed = true;
+                    isfocusing = false;
+                } else {
+                    mDraw = new DrawCaptureRect(TakePhotoActivity.this, mid_x, mid_y, draw_width, draw_height, getResources().getColor(R.color.red));
+                    preview.addView(mDraw);
+                    isfocuseed = false;
+                    isfocusing = true;
+                }
+            }
+        });
+    }
 
+    private void init() {
+        DisplayMetrics dm = getResources().getDisplayMetrics();
+        width = dm.widthPixels;
+        height = dm.heightPixels;
+        draw_width = width - 200;
+        draw_height = (int) (draw_width * 0.75);
+        fix_top = -200;
 
-        /**
-         * Camera对象中含有一个内部类Camera.Parameters.该类可以对Camera的特性进行定制
-         * 在Parameters中设置完成后，需要调用Camera.setParameters()方法，相应的设置才会生效
-         * 由于不同的设备，Camera的特性是不同的，所以在设置时，需要首先判断设备对应的特性，再加以设置
-         * 比如在调用setEffects之前最好先调用getSupportedColorEffects。如果设备不支持颜色特性，那么该方法将
-         * 返回一个null
-         */
+        mid_x = width / 2;
+        mid_y = height / 2 + fix_top;
+    }
+
+    private Rect calculateTapArea(float x, float y, float coefficient) {
+        float focusAreaSize = 200;
+        int areaSize = Float.valueOf(focusAreaSize * coefficient).intValue();
+        int centerX = (int) ((x / width) * 2000 - 1000);
+        int centerY = (int) ((y / height) * 2000 - 1000);
+        int left = clamp(centerX - (areaSize / 2), -1000, 1000);
+        int top = clamp(centerY - (areaSize / 2), -1000, 1000);
+        RectF rectF = new RectF(left, top, left + areaSize, top + areaSize);
+        return new Rect(Math.round(rectF.left), Math.round(rectF.top),
+                Math.round(rectF.right), Math.round(rectF.bottom));
+    }
+
+    private int clamp(int x, int min, int max) {
+        if (x > max) {
+            return max;
+        }
+        if (x < min) {
+            return min;
+        }
+        return x;
+    }
+
+    //快门声音
+    ShutterCallback shutterCallback = new ShutterCallback() {
+        @Override
+        public void onShutter() {
+            // TODO Auto-generated method stub
+//			mCamera.enableShutterSound(true);
+        }
+    };
+
+    public void getCameraInstance() {
         try {
-
-            Camera.Parameters param = camera.getParameters();
-            if (this.getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE) {
-                //如果是竖屏
-                param.set("orientation", "portrait");
-                //在2.2以上可以使用
-                camera.setDisplayOrientation(90);
-            } else {
-                param.set("orientation", "landscape");
-                //在2.2以上可以使用
-                camera.setDisplayOrientation(0);
-            }
-            //首先获取系统设备支持的所有颜色特效，有复合我们的，则设置；否则不设置
-//            List<String> colorEffects = param.getSupportedColorEffects();
-//            Iterator<String> colorItor = colorEffects.iterator();
-//            while(colorItor.hasNext()){
-//                String currColor = colorItor.next();
-//                if(currColor.equals(Camera.Parameters.EFFECT_SOLARIZE)){
-//                    param.setColorEffect(Camera.Parameters.EFFECT_SOLARIZE);
-//                    break;
-//                }
-//            }
-//            //设置完成需要再次调用setParameter方法才能生效
-//            camera.setParameters(param);
-
-            camera.setPreviewDisplay(holder);
-
-            /**
-             * 在显示了预览后，我们有时候希望限制预览的Size
-             * 我们并不是自己指定一个SIze而是指定一个Size，然后
-             * 获取系统支持的SIZE，然后选择一个比指定SIZE小且最接近所指定SIZE的一个
-             * Camera.Size对象就是该SIZE。
-             *
-             */
-
-            max_width = sv_preview.getWidth();
-            max_height = sv_preview.getHeight();
-            int bestWidth = 0;
-            int bestHeight = 0;
-
-            List<Camera.Size> sizeList = param.getSupportedPreviewSizes();
-            //如果sizeList只有一个我们也没有必要做什么了，因为就他一个别无选择
-            if(sizeList != null && sizeList.size() > 1){
-                Iterator<Camera.Size> itor = sizeList.iterator();
-                while(itor.hasNext()){
-                    Camera.Size cur = itor.next();
-                    if(cur.width > bestWidth && cur.height>bestHeight && cur.width < max_width && cur.height < max_height){
-                        bestWidth = cur.width;
-                        bestHeight = cur.height;
-                    }
-                }
-                if(bestWidth != 0 && bestHeight != 0){
-                    param.setPreviewSize(bestWidth, bestHeight);
-                    //这里改变了SIze后，我们还要告诉SurfaceView，否则，Surface将不会改变大小，进入Camera的图像将质量很差
-                    sv_preview.setLayoutParams(new RelativeLayout.LayoutParams(bestWidth, bestHeight));
-                }
-            }
-            camera.setParameters(param);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+                mCamera = Camera.open(0);
+                // i=0 表示后置相机
+            } else
+                mCamera = Camera.open();
         } catch (Exception e) {
-            Log.d("surfaceCreated", "catch Exception");
-//            Log.d("surfaceCreated", e.toString());
-            // 如果出现异常，则释放Camera对象
-            camera.release();
+        }
+    }
+
+    //设置预览参数
+    public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
+        public CameraPreview(Context context, Camera camera) {
+            super(context);
+            mHolder = getHolder();
+            mHolder.addCallback(this);
+            mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         }
 
-        //启动预览功能
-        camera.startPreview();
+        public void surfaceCreated(SurfaceHolder holder) {
+            try {
+                mCamera.setPreviewDisplay(holder);
+                mCamera.startPreview();
+            } catch (IOException e) {
+                Log.d("TakePhoto", "Error setting camera preview: " + e.getMessage());
+            }
+        }
+
+        public void surfaceDestroyed(SurfaceHolder holder) {
+            resetCamera();
+        }
+
+        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+            if (mHolder.getSurface() == null) {
+                return;
+            }
+            try {
+                mCamera.stopPreview();
+            } catch (Exception e) {
+            }
+            try {
+                mCamera.setDisplayOrientation(getCameraDisplayOrientation(0));
+                Camera.Parameters params = mCamera.getParameters();
+                Size PreviewSize = getBestSupportedSize(params.getSupportedPreviewSizes());
+                Size PictureSize = getBestSupportedSize(params.getSupportedPictureSizes());
+                params.setPictureFormat(ImageFormat.JPEG);
+                params.setPreviewSize(PreviewSize.width, PreviewSize.height);
+                params.setPictureSize(PictureSize.width, PictureSize.height);
+                params.setJpegQuality(100);
+                mCamera.setParameters(params);
+                mCamera.setPreviewDisplay(mHolder);
+                mCamera.startPreview();
+            } catch (Exception e) {
+                resetCamera();
+                Log.d("takePhoto", "Error starting camera preview: " + e.getMessage());
+            }
+        }
     }
 
-    @Override
-    public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i2, int i3) {
+    //获取图片数据
+    private PictureCallback mPicture = new PictureCallback() {
+        @Override
+        public void onPictureTaken(byte[] data, Camera camera) {
+            // 原a part 1储存，切换
+            // 得全图，传出
+            Matrix matrix = new Matrix();
+            matrix.setRotate(picRotate);
+            Bitmap bitmap = DecodeImageUtils.decodeImage(data, TakePhotoActivity.this, matrix);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_kk-mm-ss");// 转换格式
+            String picName = sdf.format(new Date()) + ".jpg";
+            path = getPicPath() + picName;
+            File pictureFile = new File(getPicPath());
+            if (!pictureFile.exists()) {
+                pictureFile.mkdirs();
+            }
+            pictureFile = new File(path);
 
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-        // 当Surface被销毁的时候，该方法被调用
-        //在这里需要释放Camera资源
-        camera.stopPreview();
-        camera.release();
-    }
-
-    @Override
-    public void onPictureTaken(byte[] bytes, Camera camera) {
-//        // bytes是一个原始的JPEG图像数据，
-//        //在这里我们可以存储图片，很显然可以采用MediaStore
-//        //注意保存图片后，再次调用startPreview()回到预览
-//        Uri imageUri = this.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new ContentValues());
-//        try {
-//            OutputStream os = this.getContentResolver().openOutputStream(imageUri);
-//            os.write(bytes);
-//            os.flush();
-//            os.close();
-//        } catch (Exception e) {
-//            // TODO: handle exception
-//            e.printStackTrace();
-//        }
+            // 原b 储存，切换
+            // 获取截屏
+//            View view = TakePhotoActivity.this.getWindow().getDecorView();
+//            view.setDrawingCacheEnabled(true);
+//            view.buildDrawingCache();
 //
-//        camera.startPreview();
-        Log.i(TAG, "myJpegCallback:onPictureTaken...");
-        if (null != bytes) {
-            mBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);//bytes是字节数据，将其解析成位图
-            camera.stopPreview();
-            isPreview = false;
+//            // 获取状态栏高度
+//            Rect frame = new Rect();
+//            TakePhotoActivity.this.getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
+//            int statusBarHeight = frame.top;
+            // 计算
+//            int bitmap_2_preview_fit_width = (int) (preview.getWidth() * (bitmap.getHeight() / (float)preview.getHeight() ));
+
+            Bitmap scaleBitmap = Bitmap.createScaledBitmap(bitmap,
+                    preview.getHeight(), preview.getHeight(),
+                    false
+            );
+            int left_fix = Math.abs(preview.getHeight() - mDraw.getMwidth()) / 2;
+
+            Bitmap clipBitmap = Bitmap.createBitmap(scaleBitmap,
+//                    mDraw.getMleft(),
+                    left_fix, mDraw.getMtop(), mDraw.getMwidth(), mDraw.getMheight()
+            );
+
+            try {
+                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(pictureFile));
+                clipBitmap.compress(CompressFormat.JPEG, 100, bos);
+                bos.flush();
+                bos.close();
+
+                if (bitmap != null || clipBitmap != null) {
+                    if (bitmap != null && !bitmap.isRecycled()) {
+                        bitmap.recycle();
+                    }
+                    if (clipBitmap != null && !clipBitmap.isRecycled()) {
+                        clipBitmap.recycle();
+                    }
+                    System.gc();
+                    System.out.println("图片资源已回收，控制内存占用");
+                }
+                camera.stopPreview();
+                Log.d(TAG, "跳转到裁剪页面");
+                Log.d(TAG, "imgPath: " + path);
+                Intent intent = new Intent(TakePhotoActivity.this, CutPhotoActivity.class);
+                intent.putExtra("imgPath", path);
+                startActivity(intent);
+            } catch (FileNotFoundException e) {
+                Log.d("TakePhoto", "File not found: " + e.getMessage());
+            } catch (IOException e) {
+                Log.d("TakePhoto", "Error accessing file: " + e.getMessage());
+            }
+
+            // 原a part 2储存，切换
+//            try {
+//                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(pictureFile));
+//                bitmap.compress(CompressFormat.JPEG, 100, bos);
+//                bos.flush();
+//                bos.close();
+//                if (bitmap != null && !bitmap.isRecycled()) {
+//                    bitmap.recycle();
+//                    System.gc();
+//                    System.out.println("图片资源已回收，控制内存占用");
+//                }
+//                camera.stopPreview();
+//                Log.d(TAG, "跳转到裁剪页面");
+//                Log.d(TAG, "imgPath: " + path);
+//                Intent intent = new Intent(TakePhotoActivity.this, CutPhotoActivity.class);
+//                intent.putExtra("imgPath", path);
+//                startActivity(intent);
+//            } catch (FileNotFoundException e) {
+//                Log.d("TakePhoto", "File not found: " + e.getMessage());
+//            } catch (IOException e) {
+//                Log.d("TakePhoto", "Error accessing file: " + e.getMessage());
+//            }
+
         }
-        //设置FOCUS_MODE_CONTINUOUS_VIDEO)之后，myParam.set("rotation", 90)失效。图片竟然不能旋转了，故这里要旋转下
-        Matrix matrix = new Matrix();
-        matrix.postRotate((float) 90.0);
-        // width 640 height 480 摄像头
-        Bitmap rotaBitmap = Bitmap.createBitmap(mBitmap, 0, 0, mBitmap.getWidth(), mBitmap.getHeight(), matrix, false);
-        Log.d(TAG, "mBitmap.getWidth():" + mBitmap.getWidth());
-        Log.d(TAG, "mBitmap.getHeight():" + mBitmap.getHeight());
+    };
 
-//        sv_preview.getWidth():768
-//        sv_preview.getHeight():1038
-        Log.d(TAG, "sv_preview.getWidth():" + sv_preview.getWidth());
-        Log.d(TAG, "sv_preview.getHeight():" + sv_preview.getHeight());
+    /**
+     * 获取裁剪框内截图
+     *
+     * @return
+     */
+    private Bitmap getBitmap() {
+        // 获取截屏
+        View view = this.getWindow().getDecorView();
+        view.setDrawingCacheEnabled(true);
+        view.buildDrawingCache();
 
+        // 获取状态栏高度
+        Rect frame = new Rect();
+        this.getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
+        int statusBarHeight = frame.top;
 
-        //旋转后rotaBitmap是960×1280.预览surfaview的大小是540×800
-        //将960×1280缩放到540×800
-        Bitmap sizeBitmap = Bitmap.createScaledBitmap(rotaBitmap, sv_preview.getWidth(), sv_preview.getHeight(), true);
-        Log.d(TAG, "sizeBitmap.getWidth():" + sizeBitmap.getWidth());
-        Log.d(TAG, "sizeBitmap.getHeight():" + sizeBitmap.getHeight());
+        Bitmap finalBitmap = Bitmap.createBitmap(view.getDrawingCache(),
+                mDraw.getLeft(), mDraw.getTop()
+                        + statusBarHeight, mDraw.getWidth(),
+                mDraw.getHeight());
 
-        int left = dp2px(this, 50);
-//        int top = dp2px(this, 50);
-        int top = dp2px(this, 10);
-        int width = sv_preview.getWidth() - dp2px(this, 100);
-        int height = dp2px(this, 200);
-        Bitmap rectBitmap = Bitmap.createBitmap(sizeBitmap, left, 0, width, height);//截取
-//        //保存图片到sdcard
-        if(null != rectBitmap)
-        {
-            saveJpeg(sizeBitmap);
-            saveJpeg(rectBitmap);
-        }
-
-        //再次进入预览
-        camera.startPreview();
-        isPreview = true;
+        // 释放资源
+        view.destroyDrawingCache();
+        return finalBitmap;
     }
 
-    /*给定一个Bitmap，进行保存*/
-    public void saveJpeg(Bitmap bm) {
-        String savePath = "/mnt/sdcard/rectPhoto/";
-        File folder = new File(savePath);
-        if (!folder.exists()) //如果文件夹不存在则创建
-        {
-            folder.mkdir();
+    private class OrientationListener extends OrientationEventListener {
+        public OrientationListener(Context context) {
+            super(context);
         }
-        long dataTake = System.currentTimeMillis();
-        String jpegName = savePath + dataTake + ".jpg";
-        Log.i(TAG, "saveJpeg:jpegName--" + jpegName);
-        //File jpegFile = new File(jpegName);  
-        try {
-            FileOutputStream fout = new FileOutputStream(jpegName);
-            BufferedOutputStream bos = new BufferedOutputStream(fout);
 
-            //          //如果需要改变大小(默认的是宽960×高1280),如改成宽600×高800  
-            //          Bitmap newBM = bm.createScaledBitmap(bm, 600, 800, false);  
+        public OrientationListener(Context context, int rate) {
+            super(context, rate);
+        }
 
-            bm.compress(Bitmap.CompressFormat.JPEG, 100, bos);
-            bos.flush();
-            bos.close();
-            Log.i(TAG, "saveJpeg：存储完毕！");
-        } catch (IOException e) {
-            // TODO Auto-generated catch block  
-            Log.i(TAG, "saveJpeg:存储失败！");
-            e.printStackTrace();
+        @Override
+        public void onOrientationChanged(int orientation) {
+            if (orientation == ORIENTATION_UNKNOWN) return;
+            android.hardware.Camera.CameraInfo info =
+                    new android.hardware.Camera.CameraInfo();
+            android.hardware.Camera.getCameraInfo(0, info);
+            orientation = (orientation + 45) / 90 * 90;
+            int rotation = 0;
+            if (info.facing == CameraInfo.CAMERA_FACING_FRONT) {
+                rotation = (info.orientation - orientation + 360) % 360;
+            } else {  // back-facing camera
+                rotation = (info.orientation + orientation) % 360;
+            }
+            picRotate = rotation;
         }
     }
 
-    public static int dp2px(Context context, float dp) {
-        final float scale = context.getResources().getDisplayMetrics().density;
-        return (int) (dp * scale + 0.5f);
+    public int getCameraDisplayOrientation(int cameraId) {
+        android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
+        android.hardware.Camera.getCameraInfo(cameraId, info);
+        int rotation = getWindowManager().getDefaultDisplay().getRotation();
+        int degrees = 0;
+        switch (rotation) {
+            case Surface.ROTATION_0:
+                degrees = 0;
+                break;
+            case Surface.ROTATION_90:
+                degrees = 90;
+                break;
+            case Surface.ROTATION_180:
+                degrees = 180;
+                break;
+            case Surface.ROTATION_270:
+                degrees = 270;
+                break;
+        }
+        int result;
+        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            result = (info.orientation + degrees) % 360;
+            result = (360 - result) % 360;  // compensate the mirror
+        } else {  // back-facing
+            result = (info.orientation - degrees + 360) % 360;
+        }
+        return result;
+    }
+
+    private Size getBestSupportedSize(List<Size> sizes) {
+        // 取能适用的最大的SIZE
+        Size largestSize = sizes.get(0);
+        int largestArea = sizes.get(0).height * sizes.get(0).width;
+        for (Size s : sizes) {
+            int area = s.width * s.height;
+            if (area > largestArea) {
+                largestArea = area;
+                largestSize = s;
+            }
+        }
+        return largestSize;
+    }
+
+    private void resetCamera() {
+        if (mCamera != null) {
+            mCamera.stopPreview();
+            mCamera.release();
+            mCamera = null;
+        }
+    }
+
+    public static String getPicPath() {
+        File defaultDir = Environment.getExternalStorageDirectory();
+        String path = defaultDir.getAbsolutePath() + File.separator + "DXM" + File.separator;
+        return path;
+    }
+
+    @Override
+    protected void onResume() {
+        // TODO Auto-generated method stub
+        super.onResume();
+        resetCamera();
+        getCameraInstance();
+        focus();
+    }
+
+    @Override
+    protected void onRestart() {
+        // TODO Auto-generated method stub
+        super.onRestart();
+        resetCamera();
+        getCameraInstance();
+        focus();
+    }
+
+    @Override
+    protected void onDestroy() {
+        // TODO Auto-generated method stub
+        super.onDestroy();
+        resetCamera();
     }
 }

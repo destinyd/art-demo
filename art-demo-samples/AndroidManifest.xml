@@ -2,11 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	package="com.mindpin.art_demo.samples"
 	android:versionCode="1"
-	android:versionName="0.1">
+	android:versionName="0.1"
+		  android:installLocation="preferExternal"
+		>
 
 	<uses-sdk
 		android:minSdkVersion="8"
-		android:targetSdkVersion="20" />
+		android:targetSdkVersion="21" />
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -36,7 +38,9 @@
         <activity android:name=".views.ChapterActivity"/>
         <activity android:name=".views.StepActivity"/>
         <activity android:name=".views.ResultActivity"/>
-        <activity android:name=".views.TakePhotoActivity"/>
+        <activity android:name=".views.TakePhotoActivity" android:configChanges="orientation|screenSize"/>
+		<activity android:name=".views.CutPhotoActivity" android:configChanges="orientation|screenSize"/>
+		<activity android:name=".views.PreviewActivity" android:configChanges="orientation|screenSize"/>
 	</application>
 
 </manifest>
