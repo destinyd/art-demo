@@ -42,6 +42,7 @@ public class MainActivity extends ListActivity {
         addItem(data, "章节", ChapterActivity.class);
         addItem(data, "练习步骤", StepActivity.class);
         addItem(data, "成绩", ResultActivity.class);
+        addItem(data, "拍照提交", TakePhotoActivity.class);
 //        addItem(data, "other", OtherActivity.class);
 
         return data;

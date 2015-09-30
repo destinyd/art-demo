@@ -12,6 +12,9 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
 
 	<application
 		android:allowBackup="true"
@@ -33,6 +36,7 @@
         <activity android:name=".views.ChapterActivity"/>
         <activity android:name=".views.StepActivity"/>
         <activity android:name=".views.ResultActivity"/>
+        <activity android:name=".views.TakePhotoActivity"/>
 	</application>
 
 </manifest>

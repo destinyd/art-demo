@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="30dp"
+                  android:padding="5dp"
+                  android:background="#FFFECE"
+                  android:layout_alignParentTop="true"
+                  android:id="@+id/ll_warning"
+            >
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                  android:text="请把画纸上的杂物移开，把橡皮碎屑擦拭干净"
+                  android:layout_gravity="center"
+                  android:gravity="center"
+                />
+    </LinearLayout>
+
+    <Button android:layout_width="match_parent" android:layout_height="50dp"
+            android:id="@+id/btn_capture"
+            android:text="拍照"
+            android:layout_alignParentBottom="true"
+            />
+
+    <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:id="@+id/ll_sv"
+                    android:layout_below="@id/ll_warning"
+                    android:layout_above="@id/btn_capture"
+                    android:gravity="center_horizontal"
+            >
+        <SurfaceView
+                android:id="@+id/sv_preview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
+        <View android:layout_width="match_parent" android:layout_height="150dp"
+              android:layout_margin="50dp"
+              android:layout_centerHorizontal="true"
+              android:background="@drawable/catch_photo"
+                />
+    </RelativeLayout>
+</RelativeLayout>
