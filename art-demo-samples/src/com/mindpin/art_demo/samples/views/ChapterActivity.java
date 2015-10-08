@@ -1,6 +1,9 @@
 package com.mindpin.art_demo.samples.views;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.mindpin.android.loadingview.LoadingView;
@@ -10,7 +13,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
 
-public class ChapterActivity extends RoboActivity {
+public class ChapterActivity extends RoboActivity implements View.OnClickListener {
     @InjectView(R.id.loading_view)
     LoadingView loading_view;
     @InjectView(R.id.tv_chapter_title)
@@ -21,11 +24,14 @@ public class ChapterActivity extends RoboActivity {
     ImageView iv_chapter_1;
     @InjectView(R.id.iv_chapter_2)
     ImageView iv_chapter_2;
+    @InjectView(R.id.btn_next)
+    Button btn_next;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chapter);
+        btn_next.setOnClickListener(this);
         get_data();
     }
 
@@ -62,6 +68,13 @@ public class ChapterActivity extends RoboActivity {
         tv_chapter_content.setText("海棠果是人们喜闻乐见的水果之一，酸酸甜甜的口感，富含多种维生素。作为有着圆球体体积特征的水果，它也是很适合作为素描的素材。");
         ImageLoader.getInstance().displayImage("assets://chapter_1_1.png", iv_chapter_1);
         ImageLoader.getInstance().displayImage("assets://chapter_1_2.png", iv_chapter_2);
+    }
+
+    @Override
+    public void onClick(View view) {
+        if(view.getId() == R.id.btn_next){
+            startActivity(new Intent(this, StepActivity.class));
+        }
     }
 
 //    @SuppressWarnings("unchecked")
