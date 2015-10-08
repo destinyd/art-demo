@@ -25,15 +25,13 @@
 		android:theme="@style/AppTheme" android:name=".ArtDemoApplication">
 
 		<activity
-			android:name=".views.MainActivity"
+			android:name=".views.CoursesActivity"
 			android:label="@string/app_name">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<activity android:name=".views.SimpleActivity"/>
-		<activity android:name=".views.CoursesActivity"/>
         <activity android:name=".views.ChaptersActivity"/>
         <activity android:name=".views.ChapterActivity"/>
         <activity android:name=".views.StepActivity"/>
