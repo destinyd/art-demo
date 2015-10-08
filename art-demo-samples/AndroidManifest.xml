@@ -39,8 +39,6 @@
         <activity android:name=".views.StepActivity"/>
         <activity android:name=".views.ResultActivity"/>
         <activity android:name=".views.TakePhotoActivity" android:configChanges="orientation|screenSize"/>
-		<activity android:name=".views.CutPhotoActivity" android:configChanges="orientation|screenSize"/>
-		<activity android:name=".views.PreviewActivity" android:configChanges="orientation|screenSize"/>
 	</application>
 
 </manifest>
