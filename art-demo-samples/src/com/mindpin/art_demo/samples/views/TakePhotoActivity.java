@@ -18,6 +18,7 @@ import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
+import com.mindpin.art_demo.samples.Constants;
 import com.mindpin.art_demo.samples.R;
 
 import java.io.*;
@@ -297,8 +298,8 @@ public class TakePhotoActivity extends Activity {// implements OnTouchListener {
                 camera.stopPreview();
                 Log.d(TAG, "跳转到裁剪页面");
                 Log.d(TAG, "imgPath: " + path);
-                Intent intent = new Intent(TakePhotoActivity.this, CutPhotoActivity.class);
-                intent.putExtra("imgPath", path);
+                Intent intent = new Intent(TakePhotoActivity.this, ResultActivity.class);
+                intent.putExtra(Constants.Extra.IMAGE_PATH, path);
                 startActivity(intent);
             } catch (FileNotFoundException e) {
                 Log.d("TakePhoto", "File not found: " + e.getMessage());

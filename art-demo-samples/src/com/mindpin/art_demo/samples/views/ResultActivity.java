@@ -2,11 +2,13 @@ package com.mindpin.art_demo.samples.views;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import com.mindpin.android.loadingview.LoadingView;
+import com.mindpin.art_demo.samples.Constants;
 import com.mindpin.art_demo.samples.R;
 import com.mindpin.art_demo.samples.utils.DemoAsyncTask;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -14,6 +16,7 @@ import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
 
 public class ResultActivity extends RoboActivity implements View.OnClickListener, View.OnTouchListener {
+    private static final String TAG = "ResultActivity";
     @InjectView(R.id.loading_view)
     LoadingView loading_view;
     @InjectView(R.id.iv_result)
@@ -26,11 +29,16 @@ public class ResultActivity extends RoboActivity implements View.OnClickListener
     @InjectView(R.id.btn_next)
     Button btn_next;
 
+    String img_path;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.result);
         bind();
+        img_path = getIntent().getStringExtra(Constants.Extra.IMAGE_PATH);
+        if (img_path != null)
+            img_path = "file://" + img_path;
         get_data();
     }
 
@@ -52,6 +60,9 @@ public class ResultActivity extends RoboActivity implements View.OnClickListener
             @Override
             public Void call() throws Exception {
                 Thread.sleep(1000);
+                if(img_path == null)
+                    img_path = "assets://result.png";
+                Log.d(TAG, img_path);
                 return null;
             }
 
@@ -69,7 +80,7 @@ public class ResultActivity extends RoboActivity implements View.OnClickListener
     }
 
     private void build_views() {
-        ImageLoader.getInstance().displayImage("assets://result.png", iv_result);
+        ImageLoader.getInstance().displayImage(img_path, iv_result);
     }
 
     @Override
@@ -91,7 +102,7 @@ public class ResultActivity extends RoboActivity implements View.OnClickListener
                 ImageLoader.getInstance().displayImage("assets://chapter_1_1.png", iv_result);
             }
             if (motionEvent.getAction() == MotionEvent.ACTION_UP) {  //起來的時候
-                ImageLoader.getInstance().displayImage("assets://result.png", iv_result);
+                ImageLoader.getInstance().displayImage(img_path, iv_result);
             }
         }
         return false;
