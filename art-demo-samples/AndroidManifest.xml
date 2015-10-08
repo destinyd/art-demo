@@ -3,7 +3,7 @@
 	package="com.mindpin.art_demo.samples"
 	android:versionCode="1"
 	android:versionName="0.1"
-		  android:installLocation="preferExternal"
+		  android:installLocation="auto"
 		>
 
 	<uses-sdk
