@@ -93,45 +93,46 @@ public class TakePhotoActivity extends Activity {// implements OnTouchListener {
         });
     }
 
+//    2015-10-12取消变焦，修复bug
     private void focus() {
         // 自动聚焦
-        isfocusing = true;
-        Rect focusRect = calculateTapArea(mid_x, mid_y, 1f);
-        Rect meteringRect = calculateTapArea(mid_x, mid_y, 1.5f);
-        Parameters parameters = mCamera.getParameters();
-        List<String> focusModes = parameters.getSupportedFocusModes();
-        System.out.println("支持的变焦模式" + focusModes);
-        parameters.setFocusMode(Parameters.FOCUS_MODE_AUTO);
-        if (parameters.getMaxNumFocusAreas() > 0) {
-            List<Area> focusAreas = new ArrayList<Area>();
-            focusAreas.add(new Area(focusRect, 600));
-            parameters.setFocusAreas(focusAreas);
-        }
-        if (parameters.getMaxNumMeteringAreas() > 0) {
-            List<Area> meteringAreas = new ArrayList<Area>();
-            meteringAreas.add(new Area(meteringRect, 1000));
-            parameters.setMeteringAreas(meteringAreas);
-        }
-        mCamera.cancelAutoFocus();
-        mCamera.setParameters(parameters);
-        mCamera.autoFocus(new AutoFocusCallback() {
-            @Override
-            public void onAutoFocus(boolean success, Camera camera) {
-                Log.d(TAG, "onAutoFocus success:" + success);
-                // 对焦成功
-                if (success) {
-                    mDraw = new DrawCaptureRect(TakePhotoActivity.this, mid_x, mid_y, draw_width, draw_height, getResources().getColor(R.color.green));
-                    preview.addView(mDraw);
-                    isfocuseed = true;
-                    isfocusing = false;
-                } else {
-                    mDraw = new DrawCaptureRect(TakePhotoActivity.this, mid_x, mid_y, draw_width, draw_height, getResources().getColor(R.color.red));
-                    preview.addView(mDraw);
-                    isfocuseed = false;
-                    isfocusing = true;
-                }
-            }
-        });
+//        isfocusing = true;
+//        Rect focusRect = calculateTapArea(mid_x, mid_y, 1f);
+//        Rect meteringRect = calculateTapArea(mid_x, mid_y, 1.5f);
+//        Parameters parameters = mCamera.getParameters();
+//        List<String> focusModes = parameters.getSupportedFocusModes();
+//        System.out.println("支持的变焦模式" + focusModes);
+//        parameters.setFocusMode(Parameters.FOCUS_MODE_AUTO);
+//        if (parameters.getMaxNumFocusAreas() > 0) {
+//            List<Area> focusAreas = new ArrayList<Area>();
+//            focusAreas.add(new Area(focusRect, 600));
+//            parameters.setFocusAreas(focusAreas);
+//        }
+//        if (parameters.getMaxNumMeteringAreas() > 0) {
+//            List<Area> meteringAreas = new ArrayList<Area>();
+//            meteringAreas.add(new Area(meteringRect, 1000));
+//            parameters.setMeteringAreas(meteringAreas);
+//        }
+//        mCamera.cancelAutoFocus();
+//        mCamera.setParameters(parameters);
+//        mCamera.autoFocus(new AutoFocusCallback() {
+//            @Override
+//            public void onAutoFocus(boolean success, Camera camera) {
+//                Log.d(TAG, "onAutoFocus success:" + success);
+//                // 对焦成功
+//                if (success) {
+//                    mDraw = new DrawCaptureRect(TakePhotoActivity.this, mid_x, mid_y, draw_width, draw_height, getResources().getColor(R.color.green));
+//                    preview.addView(mDraw);
+//                    isfocuseed = true;
+//                    isfocusing = false;
+//                } else {
+//                    mDraw = new DrawCaptureRect(TakePhotoActivity.this, mid_x, mid_y, draw_width, draw_height, getResources().getColor(R.color.red));
+//                    preview.addView(mDraw);
+//                    isfocuseed = false;
+//                    isfocusing = true;
+//                }
+//            }
+//        });
     }
 
     private void init() {
@@ -232,7 +233,7 @@ public class TakePhotoActivity extends Activity {// implements OnTouchListener {
                 mCamera.startPreview();
             } catch (Exception e) {
                 resetCamera();
-                Log.d("takePhoto", "Error starting camera preview: " + e.getMessage());
+                Log.e("takePhoto", "Error starting camera preview: " + e.getMessage());
             }
         }
     }
@@ -448,7 +449,7 @@ public class TakePhotoActivity extends Activity {// implements OnTouchListener {
         super.onResume();
         resetCamera();
         getCameraInstance();
-        focus();
+//        focus();
     }
 
     @Override
@@ -457,7 +458,7 @@ public class TakePhotoActivity extends Activity {// implements OnTouchListener {
         super.onRestart();
         resetCamera();
         getCameraInstance();
-        focus();
+//        focus();
     }
 
     @Override
